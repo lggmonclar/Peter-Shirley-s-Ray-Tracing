@@ -44,11 +44,11 @@ class Vec3 {
     }
 
     void writeColor(std::ostream& out, int samplesPerPixel) {
-      // Divide the color total by the number of samples
+      // Divide the color total by the number of samples and gamma-correct for a gamma value of 2.0
       double scale = 1.0 / samplesPerPixel;
-      double r = scale * m_elements[0];
-      double g = scale * m_elements[1];
-      double b = scale * m_elements[2];
+      double r = sqrt(scale * m_elements[0]);
+      double g = sqrt(scale * m_elements[1]);
+      double b = sqrt(scale * m_elements[2]);
 
       // Write the translated [0, 255] value of each color component
       out << static_cast<int>(255.999 * clamp(r, 0.0, 0.999)) << ' '
@@ -105,4 +105,60 @@ inline Vec3 cross(const Vec3& u, const Vec3& v) {
 
 inline Vec3 unitVector(Vec3 v) {
   return v / v.length();
+}
+
+inline Vec3 random() {
+  return Vec3(randomDouble(), randomDouble(), randomDouble());
+}
+
+inline Vec3 random(double min, double max) {
+  return Vec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
+}
+
+// Gets a random point in the unit sphere by using a "hacky" method of first calculating a random point 
+// in the XYZ unit cube and then if that point doesn't lie on the unit sphere, trying again until it does.
+inline Vec3 randomInUnitSphere() {
+  while (true) {
+    Vec3 p = random(-1, 1);
+    if (p.lengthSquared() >= 1) continue;
+    return p;
+  }
+}
+
+// A more proper way of calculating a random point in the unit sphere, which uses constraints that guarantee that the point will lie on it.
+inline Vec3 randomUnitVector() {
+  double a = randomDouble(0, 2 * pi);
+  double z = randomDouble(-1, 1);
+  double r = sqrt(1 - z * z);
+
+  return Vec3(r * cos(a), r * sin(a), z);
+}
+
+inline Vec3 randomInHemisphere(const Vec3& normal) {
+  Vec3 inUnitSphere = randomInUnitSphere();
+  if (dot(inUnitSphere, normal) >= 0) {
+    return inUnitSphere;
+  }
+  else {
+    return -inUnitSphere;
+  }
+}
+
+inline Vec3 randomInUnitDisk() {
+  while (true) {
+    Vec3 p = Vec3(randomDouble(-1, 1), randomDouble(-1, 1), 0);
+    if (p.lengthSquared() >= 1) continue;
+    return p;
+  }
+}
+
+inline Vec3 reflect(const Vec3& in, const Vec3& n) {
+  return in - 2 * dot(in, n) * n;
+}
+
+inline Vec3 refract(const Vec3& uv, const Vec3& n, double etaOverEtaPrime) {
+  auto cosTheta = dot(-uv, n);
+  Vec3 rParallel = etaOverEtaPrime * (uv + cosTheta * n);
+  Vec3 rPerpendicular = -sqrt(1.0 - rParallel.lengthSquared()) * n;
+  return rParallel + rPerpendicular;
 }

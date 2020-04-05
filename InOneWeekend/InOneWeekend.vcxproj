@@ -150,7 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Rendering\Materials\Dielectric.h" />
+    <ClInclude Include="src\Rendering\Materials\Lambertian.h" />
+    <ClInclude Include="src\Rendering\Materials\Material.h" />
+    <ClInclude Include="src\Rendering\Materials\Metal.h" />
     <ClInclude Include="src\World\Camera.h" />
+    <ClInclude Include="src\World\Geometry\HitRecord.h" />
     <ClInclude Include="src\World\HittableList.h" />
     <ClInclude Include="src\World\Geometry\Hittable.h" />
     <ClInclude Include="src\World\Geometry\Sphere.h" />
@@ -159,6 +164,9 @@
     <ClInclude Include="src\Math\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Rendering\Materials\Dielectric.cpp" />
+    <ClCompile Include="src\Rendering\Materials\Lambertian.cpp" />
+    <ClCompile Include="src\Rendering\Materials\Metal.cpp" />
     <ClCompile Include="src\World\HittableList.cpp" />
     <ClCompile Include="src\World\Geometry\Sphere.cpp" />
     <ClCompile Include="src\main.cpp" />
